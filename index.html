@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CyberStore: autoevaluación de ciberseguridad</title>
+<style>
+:root{--bg:#eef3f5;--fg:#13262c;--mu:#5a6c73;--cd:#fff;--bd:#dbe4e7;--ac:#1f6f78;--ac2:#2a8f99;--ok:#1b7f4b;--wa:#a05f00;--ba:#b3261e;--bub:#e6f0f2;--sh:0 1px 2px rgba(16,40,48,.05),0 8px 24px rgba(16,40,48,.07);--h1:#0d3a42;--h2:#237f89;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1519;--fg:#e6eef0;--mu:#9bb0b7;--cd:#14242a;--bd:#25383f;--ac:#4fb3bf;--ac2:#6cc6d1;--ok:#4cc38a;--wa:#e5a53b;--ba:#ff7b72;--bub:#1b3038;--sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--h1:#0a2c33;--h2:#1c6b75;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1519;--fg:#e6eef0;--mu:#9bb0b7;--cd:#14242a;--bd:#25383f;--ac:#4fb3bf;--ac2:#6cc6d1;--ok:#4cc38a;--wa:#e5a53b;--ba:#ff7b72;--bub:#1b3038;--sh:0 1px 2px rgba(0,0,0,.4),0 8px 24px rgba(0,0,0,.35);--h1:#0a2c33;--h2:#1c6b75;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;-webkit-font-smoothing:antialiased}
+main{max-width:780px;margin:0 auto;padding:16px}
+h2{font-size:1.3rem;margin:.2em 0 .6em;letter-spacing:-.01em}h3{font-size:1.05rem;margin:.2em 0 .3em}
+.hero{background:linear-gradient(135deg,var(--h1),var(--h2));color:#fff;border-radius:20px;padding:22px;display:flex;gap:16px;align-items:center;box-shadow:var(--sh)}
+.hero svg{flex:none;width:58px;height:58px}.hero h1{margin:0;font-size:1.9rem;letter-spacing:-.02em;line-height:1.15}.hero p{margin:.25em 0 0;opacity:.92}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}.chips span{background:rgba(255,255,255,.18);padding:3px 11px;border-radius:99px;font-size:.78rem}
+nav{display:flex;gap:4px;margin:16px 0;background:var(--cd);padding:5px;border-radius:14px;box-shadow:var(--sh);overflow-x:auto}
+button{font:inherit;font-weight:600;border:1px solid var(--bd);background:var(--cd);color:var(--fg);padding:11px 18px;border-radius:12px;cursor:pointer;min-height:44px;transition:transform .12s,box-shadow .12s}
+button:hover:not(:disabled){transform:translateY(-1px);box-shadow:var(--sh)}button:disabled{opacity:.5;cursor:default}
+button.p{background:linear-gradient(135deg,var(--h2),var(--h1));border-color:transparent;color:#fff}
+.tab{flex:1;white-space:nowrap;border:0;background:transparent;color:var(--mu);padding:10px 12px;box-shadow:none}
+.tab[aria-selected="true"]{background:linear-gradient(135deg,var(--h2),var(--h1));color:#fff}
+button:focus-visible{outline:3px solid var(--ac2);outline-offset:2px}
+.card,fieldset{background:var(--cd);border:0;border-radius:16px;padding:18px;margin:0 0 14px;box-shadow:var(--sh)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.grid .card{margin:0;transition:transform .15s}.grid .card:hover{transform:translateY(-3px)}
+.ic{font-size:1.8rem;line-height:1;margin-bottom:8px}
+legend{font-weight:600;padding:0 0 8px}
+fieldset label{position:relative;display:inline-block;margin:4px 8px 0 0;padding:9px 18px;border:1.5px solid var(--bd);border-radius:99px;cursor:pointer;background:var(--bg);transition:background .12s}
+fieldset input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
+fieldset label:has(input:checked){background:linear-gradient(135deg,var(--h2),var(--h1));color:#fff;border-color:transparent}
+fieldset label:has(input:focus-visible){outline:3px solid var(--ac2);outline-offset:2px}
+.pg{height:8px;background:var(--bd);border-radius:99px;overflow:hidden;margin:6px 0 16px}.pg i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--h2),var(--ac2));border-radius:99px;transition:width .3s}
+.res{text-align:center}.res ul{text-align:left}#clr li::marker{color:var(--ac)}
+.ring{--c:var(--ok);width:132px;height:132px;border-radius:50%;background:conic-gradient(var(--c) calc(var(--p)*1%),var(--bd) 0);display:grid;place-items:center;margin:0 auto 12px}
+.ring::before{content:"";grid-area:1/1;width:102px;height:102px;border-radius:50%;background:var(--cd)}.ring b{grid-area:1/1;font-size:2rem;z-index:1}.ring.wa{--c:var(--wa)}.ring.ba{--c:var(--ba)}
+.badge{display:inline-block;padding:4px 16px;border-radius:99px;font-weight:700;background:var(--bub)}
+blockquote{margin:12px 0;padding:14px 16px;background:var(--bub);border-radius:16px 16px 16px 4px;font-size:1.02rem}
+.row{display:flex;gap:10px;flex-wrap:wrap}button[data-a]{flex:1;min-width:140px}
+button[data-a="1"]{border:1.5px solid var(--ba);color:var(--ba)}button[data-a="0"]{border:1.5px solid var(--ok);color:var(--ok)}
+label[for=u]{font-weight:600}
+input[type=text]{width:100%;font:inherit;padding:13px 14px;border:1.5px solid var(--bd);border-radius:12px;background:var(--bg);color:var(--fg);margin:6px 0 12px}
+input[type=text]:focus{outline:3px solid var(--ac2);outline-offset:1px;border-color:transparent}
+#vr ul{list-style:none;padding:0;margin:12px 0}#vr li{position:relative;padding:8px 10px 8px 40px;border-radius:10px;margin-bottom:6px;background:var(--bg);color:var(--fg)}
+#vr li::before{position:absolute;left:10px;top:9px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-size:.8rem;font-weight:700;color:var(--cd)}
+#vr li.ok::before{content:"✓";background:var(--ok)}#vr li.ba::before{content:"!";background:var(--ba)}
+.big{font-size:2.4rem;font-weight:700}.ok{color:var(--ok)}.wa{color:var(--wa)}.ba{color:var(--ba)}
+small,footer{color:var(--mu)}footer{margin-top:24px;font-size:.85rem;text-align:center}
+.chip{display:inline-block;background:var(--bub);padding:2px 10px;border-radius:99px;font-size:.8rem;font-weight:600;color:var(--fg)}#pr{margin:14px 0 0}
+.ex{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.ex button{padding:6px 12px;min-height:34px;font-size:.85rem;font-weight:500;border-radius:99px}
+.tip{margin:8px 0 0;font-size:.92rem;color:var(--wa)}
+@keyframes sk{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}.sk{animation:sk .3s}
+@keyframes pp{from{opacity:0;transform:translateY(6px)}}.pp{animation:pp .25s}
+.tab.sos{color:var(--ba)}.tab.sos[aria-selected="true"]{background:var(--ba);color:var(--cd)}
+.wa-h{background:#075e54;color:#fff;padding:10px 14px;border-radius:14px 14px 0 0;font-weight:600;display:flex;justify-content:space-between;gap:8px}.wa-h small{color:#cfe}
+.chat{background:#e5ddd5;padding:12px;min-height:220px;max-height:420px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;border-radius:0 0 14px 14px}
+.m{max-width:84%;padding:8px 12px;border-radius:12px;background:#fff;color:#111;align-self:flex-start;animation:pp .25s}
+.m.me{background:#d9fdd3;align-self:flex-end}.m.sys{align-self:center;background:#fff3cd;font-size:.88rem;text-align:center;max-width:94%}.m.bad{background:#ffd7d3;align-self:center;max-width:94%}.m.good{background:#d4f5df;align-self:center;max-width:94%}
+.opts{display:grid;gap:8px;margin-top:12px}.opts button{text-align:left}.st{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+.sos-o{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:10px 0}
+.sos-l label{display:block;padding:10px 12px;margin-bottom:6px;border-radius:10px;background:var(--bg);cursor:pointer}.sos-l input{margin-right:8px;width:18px;height:18px;vertical-align:middle}.sos-l label:has(input:checked){opacity:.55;text-decoration:line-through}
+@media(prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+</style></head><body><main>
+<header class="hero"><svg viewBox="0 0 64 64" aria-hidden="true"><path d="M32 4 8 14v16c0 15 10 26 24 30 14-4 24-15 24-30V14z" fill="rgba(255,255,255,.18)" stroke="#fff" stroke-width="3" stroke-linejoin="round"/><path d="m21 33 8 8 15-17" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/></svg><div><h1>CyberStore</h1><p>Autoevaluación y capacitación en ciberseguridad para pequeños comercios.</p><div class="chips"><span>Gratis</span><span>Sin instalar nada</span><span>En español</span></div></div></header>
+<nav><button class="tab" data-t="ini">Inicio</button><button class="tab" data-t="chk">Checklist</button><button class="tab" data-t="sim">Simulador</button><button class="tab" data-t="qz">Quiz de phishing</button><button class="tab" data-t="ver">Verificador de URL</button><button class="tab sos" data-t="sos">🆘 Ya caí</button></nav>
+
+<section id="ini">
+<div class="card"><h2>¿Qué tan protegido está tu negocio?</h2>
+<p>Tres herramientas rápidas y sin instalar nada: mide tus hábitos de seguridad, entrena tu ojo contra fraudes y revisa si un enlace es sospechoso.</p></div>
+<div class="grid">
+<div class="card"><div class="ic">✅</div><h3>1. Checklist</h3><p>12 preguntas y un puntaje de riesgo.</p><button class="p" data-go="chk">Empezar</button></div>
+<div class="card"><div class="ic">🎣</div><h3>2. Quiz de phishing</h3><p>7 casos para decidir si es fraude.</p><button class="p" data-go="qz">Jugar</button></div>
+<div class="card"><div class="ic">🔎</div><h3>3. Verificador de URL</h3><p>Señales de alerta en un enlace.</p><button class="p" data-go="ver">Revisar</button></div>
+</div><p id="pr" class="res"></p></section>
+
+<section id="chk" hidden><h2>Checklist de buenas prácticas</h2><div class="pg"><i id="pgi"></i></div><small id="lv">Respondidas 0/12</small><div id="cl" style="margin-top:12px"></div><button class="p" id="calc">Calcular mi puntaje</button><div id="clr" style="margin-top:12px"></div></section>
+
+<section id="qz" hidden><h2>Quiz: ¿fraude o legítimo?</h2><div id="qb"></div></section>
+
+<section id="ver" hidden><h2>Verificador de URL</h2>
+<div class="card"><label for="u">Pega el enlace que quieres revisar</label>
+<input type="text" id="u" placeholder="ejemplo: bancolombia-seguro.xyz/validar" autocomplete="off">
+<div class="ex" id="ex"></div><div class="row"><button class="p" id="go">Analizar enlace</button><button id="hd" hidden>Analizar cabeceras de seguridad</button></div>
+<p id="hn"><small>El análisis de cabeceras de seguridad requiere el servicio opcional y no está activo en esta versión.</small></p></div>
+<div id="vr"></div></section>
+
+<section id="sim" hidden><h2>Simulador: un día en tu tienda</h2><p>Responde como lo harías de verdad y mira las consecuencias.</p>
+<div class="st"><span class="chip" id="sc"></span><span class="chip" id="ss"></span></div>
+<div class="wa-h"><span id="sw">Chat</span><small>en línea</small></div><div class="chat" id="ch"></div><div class="opts" id="op"></div></section>
+<section id="sos" hidden><h2>Ya caí, ¿qué hago?</h2><p>Respira. Actuar rápido ayuda. Elige qué te pasó:</p><div class="sos-o" id="so"></div><div id="sl"></div></section>
+<footer>Prototipo académico. Los casos del quiz son simulados e inspirados en tipologías de fraude reportadas en Colombia. El análisis de enlaces es orientativo y no garantiza que un sitio sea seguro.</footer>
+</main>
+<script>
+const HEADERS_API=""; // URL del servicio de cabeceras (worker.js). Vacío = desactivado.
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+function show(id){$$("section").forEach(s=>s.hidden=s.id!==id);$$(".tab").forEach(b=>b.setAttribute("aria-selected",String(b.dataset.t===id)));scrollTo(0,0)}
+$$(".tab,[data-go]").forEach(b=>b.onclick=()=>show(b.dataset.t||b.dataset.go));show("ini");
+
+const D={};function pr(){$("#pr").innerHTML=Object.keys(D).map(k=>`<span class="chip">${k}: ${D[k]}</span>`).join(" ")}
+const CHECK=[
+["Uso contraseñas distintas en WhatsApp, correo y redes del negocio.",3,"Usa una contraseña diferente en cada cuenta; un gestor de contraseñas ayuda."],
+["Tengo activada la verificación en dos pasos de WhatsApp.",3,"Activa la verificación en dos pasos en WhatsApp (Ajustes, Cuenta)."],
+["Tengo verificación en dos pasos en el correo y las redes del negocio.",3,"Activa la verificación en dos pasos en tu correo, Instagram y Facebook."],
+["Nunca comparto con nadie el código de seis dígitos que llega por SMS.",3,"Ese código da acceso a tu cuenta: jamás lo compartas, ni con conocidos."],
+["Antes de entregar un pedido, confirmo el pago dentro de la app del banco.",3,"Las capturas se falsifican: confirma el pago solo en tu app bancaria."],
+["Desconfío de enlaces por mensaje, aunque parezcan de un banco o proveedor.",2,"Entra escribiendo la dirección o desde la app oficial, no desde el enlace."],
+["Confirmo por llamada cualquier cambio de cuenta de un proveedor.",2,"Llama al número que ya tenías guardado antes de pagar a una cuenta nueva."],
+["Reviso los dispositivos vinculados (WhatsApp Web) de mi cuenta.",2,"Revisa Dispositivos vinculados y cierra las sesiones que no reconozcas."],
+["Mantengo actualizados el celular y las aplicaciones del negocio.",1,"Activa las actualizaciones automáticas."],
+["El celular del negocio tiene bloqueo de pantalla.",1,"Pon PIN o huella para proteger el equipo si se pierde."],
+["Hago copia de seguridad de contactos, pedidos y catálogo.",1,"Programa una copia periódica en la nube o en un disco."],
+["Quienes me ayudan en el negocio saben reconocer mensajes sospechosos.",1,"Comparte este ejercicio con tu equipo de trabajo."]];
+$("#cl").innerHTML=CHECK.map((c,i)=>`<fieldset><legend>${i+1}. ${c[0]}</legend>${["Sí","A veces","No"].map((o,j)=>`<label><input type="radio" name="q${i}" value="${[1,.5,0][j]}"> ${o}</label>`).join("")}</fieldset>`).join("");
+$("#cl").onchange=e=>{let s=0,t=0,n=0;CHECK.forEach((c,i)=>{const r=document.querySelector(`input[name=q${i}]:checked`);if(r){n++;s+=c[1]*+r.value;t+=c[1]}});
+ $("#pgi").style.width=n/CHECK.length*100+"%";$("#lv").textContent=`Respondidas ${n}/${CHECK.length} · puntaje parcial ${t?Math.round(s/t*100):0}/100`;
+ const f=e.target.closest("fieldset"),i=$$("#cl fieldset").indexOf(f);const o=f.querySelector(".tip");if(o)o.remove();
+ if(+e.target.value<1)f.insertAdjacentHTML("beforeend",`<p class="tip pp">Consejo: ${CHECK[i][2]}</p>`)};
+$("#calc").onclick=()=>{let s=0,t=0,un=0,miss=[];
+ CHECK.forEach((c,i)=>{const r=document.querySelector(`input[name=q${i}]:checked`);t+=c[1];if(!r){un++;return}s+=c[1]*+r.value;if(+r.value<1)miss.push(c)});
+ if(un){$("#clr").innerHTML=`<p class="ba">Responde las ${un} preguntas que faltan.</p>`;return}
+ const p=Math.round(s/t*100),l=p>=75?["Riesgo bajo","ok"]:p>=45?["Riesgo medio","wa"]:["Riesgo alto","ba"];
+ miss.sort((a,b)=>b[1]-a[1]);
+ $("#clr").innerHTML=`<div class="card res"><div class="ring ${l[1]}" style="--p:0"><b>0</b></div><span class="badge ${l[1]}">${l[0]}</span><p>Entre más alto el puntaje, mejor protegido está tu negocio.</p>${miss.length?"<h3>Qué mejorar primero</h3><ul>"+miss.map(m=>`<li>${m[2]}</li>`).join("")+"</ul>":"<p>Muy bien: mantén estos hábitos.</p>"}</div>`;
+ const rg=$("#clr .ring"),nb=rg.querySelector("b");let k=0;(function f(){k=Math.min(p,k+2);rg.style.setProperty("--p",k);nb.textContent=k;if(k<p)requestAnimationFrame(f)})();
+ D.Checklist=p+"/100";pr();$("#clr").scrollIntoView({behavior:"smooth"})};
+
+const CASES=[
+["WhatsApp","“Hola, ya pagué por Nequi. Te envío la captura del comprobante. Despáchalo hoy que me urge.” Tú no has recibido ninguna notificación en tu app.",1,"No hay pago en tu app. Las capturas se falsifican con facilidad y la urgencia es una presión típica."],
+["SMS","“Te escribí mi código de WhatsApp por error, ¿me lo reenvías por favor?”",1,"Es el robo clásico de cuenta: ese código permite registrar tu WhatsApp en otro teléfono."],
+["SMS","“Su cuenta será bloqueada hoy. Valide sus datos en bit.ly/validar-cuenta.”",1,"Mezcla urgencia con un enlace acortado que oculta el destino. Tu banco no pide datos por SMS."],
+["WhatsApp","“Somos tu proveedor. Desde hoy los pagos van a esta nueva cuenta.” Escribe desde un número que no tienes guardado.",1,"Cambio de cuenta desde un número nuevo. Llama al contacto que ya conocías antes de pagar."],
+["App del banco","Abres tu aplicación bancaria y aparece: “Recibiste $85.000 de Laura P.”",0,"La confirmación está dentro de tu app oficial, no en un mensaje ni en una captura."],
+["Correo","“Su cuenta de WhatsApp Business será suspendida. Verifique en meta-soporte-verificacion.com en 24 horas.”",1,"Dominio que imita a Meta y mete prisa. Los avisos reales llegan dentro de la app."],
+["WhatsApp","Un cliente habitual pregunta por el catálogo, hace su pedido sin apuro y paga por transferencia que ves reflejada en tu app.",0,"Sin presión, con relación previa y pago confirmado en tu app. Todo en orden."]];
+let qi=0,qs=0,st=0;
+function qShow(){const c=CASES[qi];
+ $("#qb").innerHTML=`<div class="card"><div class="pg"><i style="width:${(qi+1)/CASES.length*100}%"></i></div><small>Caso ${qi+1} de ${CASES.length} · ${c[0]}</small> <span class="chip">Aciertos ${qs}${st>1?" · racha "+st:""}</span><blockquote>${c[1]}</blockquote><div class="row"><button data-a="1">Es fraude</button><button data-a="0">Es legítimo</button></div><small>Atajos: F = fraude, L = legítimo</small><div id="fb"></div></div>`;
+ $$("#qb [data-a]").forEach(b=>b.onclick=()=>{const ok=+b.dataset.a===c[2];if(ok){qs++;st++}else{st=0;$("#qb .card").classList.add("sk")}$$("#qb [data-a]").forEach(x=>x.disabled=true);
+  $("#fb").innerHTML=`<p class="${ok?"ok":"ba"} pp"><strong>${ok?"Correcto.":"Incorrecto."}</strong> ${c[2]?"Era un fraude.":"Era legítimo."} ${c[3]}</p><button class="p" id="nx">${qi<CASES.length-1?"Siguiente":"Ver resultado"}</button>`;
+  $("#nx").onclick=()=>{qi++;qi<CASES.length?qShow():qEnd()}})}
+function qEnd(){D.Quiz=qs+"/"+CASES.length;pr();const m=qs>=6?"Excelente ojo.":qs>=4?"Vas bien: repasa los casos que fallaste.":"Conviene repetir el ejercicio con calma.";
+ $("#qb").innerHTML=`<div class="card"><div class="big">${qs}/${CASES.length}</div><p>${m}</p><button class="p" id="rq">Repetir</button></div>`;
+ $("#rq").onclick=()=>{qi=0;qs=0;st=0;qShow()}}
+qShow();
+
+const OFF={bancolombia:"bancolombia.com",nequi:"nequi.com.co",daviplata:"daviplata.com",dian:"dian.gov.co",whatsapp:"whatsapp.com",meta:"meta.com",facebook:"facebook.com",instagram:"instagram.com"};
+const SHORT=["bit.ly","tinyurl.com","cutt.ly","t.ly","is.gd","rb.gy","shorturl.at"],BADTLD=[".xyz",".top",".click",".icu",".live",".site",".cfd",".sbs"];
+function analyze(raw){let u;try{u=new URL(/^[a-z]+:\/\//i.test(raw)?raw:"https://"+raw)}catch(e){return null}
+ const h=u.hostname.toLowerCase(),tk=h.split(/[.\-]/),b=Object.keys(OFF).find(k=>tk.includes(k)&&!(h===OFF[k]||h.endsWith("."+OFF[k])));
+ const C=[
+ [u.protocol!=="https:",2,"No usa HTTPS: los datos viajan sin cifrar.","Usa HTTPS (conexión cifrada)."],
+ [/^\d+\.\d+\.\d+\.\d+$/.test(h),3,"Usa una dirección IP en vez de un nombre de sitio.","Usa un nombre de dominio."],
+ [raw.includes("@"),3,"Contiene @, un truco para ocultar el destino real.","No contiene @."],
+ [h.includes("xn--"),3,"Dominio con caracteres que imitan letras (punycode).","Sin caracteres engañosos en el dominio."],
+ [SHORT.includes(h),2,"Es un enlace acortado: no se ve el destino.","No es un acortador."],
+ [h.split(".").length>4,1,"Demasiados subdominios.","Cantidad normal de subdominios."],
+ [(h.match(/-/g)||[]).length>=2,1,"Muchos guiones en el dominio.","Guiones normales en el dominio."],
+ [BADTLD.some(t=>h.endsWith(t)),1,"Terminación de dominio muy usada en fraudes.","Terminación de dominio habitual."],
+ [!!b,3,`Parece imitar a “${b}”, pero no es su dominio oficial.`,"No imita marcas conocidas de la lista."],
+ [/verifica|soporte|seguro|actualiz|premio|bloquead/.test(h),1,"Palabras de urgencia o verificación en el dominio.","Sin palabras de urgencia en el dominio."]];
+ return{h,C,pts:C.reduce((a,c)=>a+(c[0]?c[1]:0),0)}}
+$("#go").onclick=()=>{const raw=$("#u").value.trim(),r=raw&&analyze(raw);
+ if(!r){$("#vr").innerHTML='<p class="ba">Escribe una URL válida.</p>';$("#hd").hidden=true;return}
+ const l=r.pts>=4?["Muy sospechoso","ba"]:r.pts>=2?["Sospechoso","wa"]:["Sin señales claras de fraude","ok"];
+ $("#vr").innerHTML=`<div class="card"><small>Sitio analizado: ${r.h.replace(/[<>&]/g,"")}</small><div class="big ${l[1]}" style="font-size:1.6rem">${l[0]}</div><ul>${r.C.map(c=>`<li class="${c[0]?"ba":"ok"}">${c[0]?"Alerta: "+c[2]:c[3]}</li>`).join("")}</ul><p><small>Si dudas, no abras el enlace: entra desde la app o la página oficial.</small></p></div><div id="hr"></div>`;
+ if(HEADERS_API){$("#hd").hidden=false;$("#hn").hidden=true;$("#hd").onclick=()=>heads(raw)}};
+let tm;$("#ex").innerHTML=["bancolombia-seguro.xyz/validar","bit.ly/premio-hoy","https://www.bancolombia.com"].map(x=>`<button>${x}</button>`).join("");
+$("#ex").onclick=e=>{if(e.target.tagName=="BUTTON"){$("#u").value=e.target.textContent;$("#go").click()}};
+$("#u").oninput=()=>{clearTimeout(tm);tm=setTimeout(()=>$("#u").value.trim().length>3&&$("#go").click(),500)};
+document.onkeydown=e=>{const b=$$("#qb [data-a]:not(:disabled)");if($("#qz").hidden||!b.length)return;const k=e.key.toLowerCase();if(k=="f")b[0].click();if(k=="l")b[1].click()};
+const SIM=[
+["Cliente nuevo",["Buenas, quiero 3 camisetas, son $120.000","Ya pagué por Nequi, te mando el comprobante 📎","Despáchalo ya que mi moto sale en 10 minutos"],"Abres la app de tu banco y no aparece ningún pago nuevo.",[
+["Entregar el pedido: ya mandó el comprobante",-120000,-25,"El comprobante era falso y entregaste sin que llegara el dinero."],
+["Esperar a que el pago aparezca en mi app",0,10,"Muy bien. El cliente desapareció y no perdiste nada."],
+["Entregar solo la mitad por si acaso",-60000,-10,"Sin pago confirmado no se entrega nada, ni la mitad."]]],
+["Tía Marta",["Hola mijo, se me dañó el celular y me llegó un código por SMS","¿Me lo pasas rapidito? Es de WhatsApp"],"A ti sí te llegó un SMS con un código de 6 dígitos.",[
+["Pasarle el código",-50000,-40,"Era un estafador con la cuenta de tu tía. Con ese código se quedó con tu WhatsApp y ya escribe a tus clientes pidiendo plata."],
+["Llamarla al número de siempre para confirmar",0,10,"Perfecto. A tu tía le habían robado la cuenta."],
+["Ignorar el mensaje",0,5,"Bien por no compartirlo. Aún mejor es avisarle a tu tía por otro medio."]]],
+["Número desconocido",["Soy Don Pedro de la distribuidora, cambié de banco","Paga la factura de $850.000 a esta cuenta nueva, por favor"],"Ese número no lo tienes guardado, aunque sí tienes una factura pendiente con ese proveedor.",[
+["Pagar a la cuenta nueva",-850000,-25,"Era un impostor y pagaste a una cuenta de estafadores."],
+["Llamar al número que ya tenía de Don Pedro",0,10,"Excelente. Él nunca había cambiado de banco."],
+["Pagar la mitad y confirmar después",-425000,-10,"Primero se confirma y después se paga, no al revés."]]],
+["Mensaje de WhatsApp",["Su cuenta de WhatsApp Business será suspendida hoy","Verifique sus datos aquí: meta-soporte-verificacion.com"],"Dentro de la app no tienes ningún aviso de suspensión.",[
+["Entrar al enlace y poner mis datos",-100000,-35,"Era una página falsa. Ahora tienen tus datos y pueden entrar a tu cuenta."],
+["No abrirlo y revisar los avisos dentro de la app",0,10,"Correcto. Los avisos reales aparecen dentro de la app."],
+["Reenviarlo a mis grupos para avisar",0,-5,"Reenviarlo expone a otros. Mejor borra el mensaje y repórtalo."]]]];
+let si=0,cj=1500000,sg=100;const $f=n=>"$"+n.toLocaleString("es-CO"),cl=v=>Math.max(0,Math.min(100,v));
+function bub(t,c){const d=document.createElement("div");d.className="m "+(c||"");d.textContent=t;$("#ch").append(d);$("#ch").scrollTop=1e5}
+function simUp(){$("#sc").textContent="Caja: "+$f(cj);$("#ss").textContent="Seguridad: "+cl(sg)}
+function simGo(){const s=SIM[si];$("#sw").textContent=s[0];$("#op").innerHTML="";if(si)bub("Llega otro mensaje…","sys");
+ s[1].forEach((t,i)=>setTimeout(()=>bub(t),i*700+400));
+ setTimeout(()=>{bub(s[2],"sys");$("#op").innerHTML=s[3].map((o,j)=>`<button data-o="${j}">${o[0]}</button>`).join("")},s[1].length*700+800)}
+$("#op").onclick=e=>{const j=e.target.dataset.o;if(j==null)return;const o=SIM[si][3][j],mal=o[1]<0||o[2]<0;$("#op").innerHTML="";bub(o[0],"me");cj+=o[1];sg+=o[2];simUp();
+ setTimeout(()=>{bub((mal?"Consecuencia: ":"Resultado: ")+o[3]+(o[1]<0?" Perdiste "+$f(-o[1])+".":""),mal?"bad":"good");si++;setTimeout(()=>si<SIM.length?simGo():simEnd(),1300)},600)};
+function simEnd(){const g=cl(sg)>=90&&cj>=1400000?"Excelente: tu tienda está muy bien protegida.":cl(sg)>=60?"Vas bien, pero hubo errores que costaron caro.":"Cuidado: caerías en varias estafas reales. Intenta de nuevo.";
+ D.Simulador=$f(cj)+" en caja";pr();bub(`Fin del día. Caja: ${$f(cj)}. Seguridad: ${cl(sg)}/100. ${g}`,"sys");
+ $("#op").innerHTML='<button class="p" id="sr">Jugar de nuevo</button>';$("#sr").onclick=()=>{si=0;cj=1500000;sg=100;$("#ch").innerHTML="";simUp();simGo()}}
+simUp();simGo();
+const SOS=[
+["💸 Pagué a una cuenta falsa",["Llama ya a tu banco, por la línea oficial de la app o del reverso de tu tarjeta, y reporta la transferencia para que intenten frenarla.","Guarda capturas, comprobantes, números de cuenta y chats. No borres nada.","Denuncia en línea en ADenunciar (fiscalia.gov.co o policia.gov.co) y pide orientación en el CAI Virtual (caivirtual.policia.gov.co).","Avisa a tus clientes y proveedores por otro medio.","Desconfía de quien te cobre por «recuperar tu dinero»: nadie puede garantizarlo."]],
+["📱 Me robaron el WhatsApp",["Desinstala y vuelve a instalar WhatsApp en tu celular e ingresa tu número: llegará un código de 6 dígitos por SMS.","Al ingresar ese código, la sesión del estafador se cierra.","Si te pide un PIN que no conoces, el estafador activó la verificación en dos pasos y tendrás que esperar 7 días para entrar sin él.","Avisa a tus contactos y clientes por otro medio: que no abran enlaces ni envíen dinero.","Ya recuperada, activa la verificación en dos pasos (Ajustes, Cuenta)."]],
+["🔗 Di mis datos o abrí un enlace falso",["Llama ya a tu banco y bloquea tarjeta, clave o acceso a la app.","Cambia tus contraseñas, empezando por el correo y WhatsApp.","Revisa tus movimientos y los dispositivos vinculados de WhatsApp.","Borra las apps que no reconozcas y reinicia el celular.","Denuncia en ADenunciar o consulta al CAI Virtual."]],
+["📦 Entregué un pedido sin pago",["Confirma en la app de tu banco que el dinero no llegó.","Guarda el chat, la captura del comprobante y los datos del comprador y del envío.","Denuncia en línea en ADenunciar y avisa a la transportadora si el pedido aún va en camino.","Desde hoy: si el pago no aparece en tu app, no se entrega."]]];
+$("#so").innerHTML=SOS.map((s,i)=>`<button data-s="${i}">${s[0]}</button>`).join("");
+$("#so").onclick=e=>{const i=e.target.dataset.s;if(i==null)return;$("#sl").innerHTML=`<div class="card sos-l pp"><h3>${SOS[i][0]}</h3><p><small>Marca cada paso cuando lo hagas.</small></p>${SOS[i][1].map(t=>`<label><input type="checkbox"> ${t}</label>`).join("")}<p><small>Fiscalía: línea 122 desde celular o 01 8000 919748. Pasos de WhatsApp según su Centro de ayuda.</small></p></div>`};
+async function heads(raw){const o=$("#hr");o.innerHTML="<p>Analizando cabeceras…</p>";
+ try{const d=await(await fetch(HEADERS_API+"?url="+encodeURIComponent(/^https?:\/\//i.test(raw)?raw:"https://"+raw))).json();
+  if(d.error)throw 0;const N={"strict-transport-security":"HSTS (fuerza HTTPS)","content-security-policy":"CSP (limita contenido externo)","x-frame-options":"Protección contra clickjacking","x-content-type-options":"Evita adivinar tipos de archivo","referrer-policy":"Política de referencia"};
+  o.innerHTML=`<div class="card"><h3>Cabeceras de seguridad</h3><ul>${Object.keys(N).map(k=>`<li class="${d.headers[k]?"ok":"wa"}">${d.headers[k]?"Presente":"Falta"}: ${N[k]}</li>`).join("")}</ul></div>`}
+ catch(e){o.innerHTML='<p class="ba">No se pudo analizar este sitio. Prueba con otra dirección.</p>'}}
+</script></body></html>
