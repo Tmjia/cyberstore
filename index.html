@@ -24,7 +24,7 @@ button:focus-visible{outline:3px solid var(--ac2);outline-offset:2px}
 .card,fieldset{background:var(--cd);border:0;border-radius:16px;padding:18px;margin:0 0 14px;box-shadow:var(--sh)}
 .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}.grid .card{margin:0;transition:transform .15s}.grid .card:hover{transform:translateY(-3px)}
 .ic{font-size:1.8rem;line-height:1;margin-bottom:8px}
-legend{font-weight:600;padding:0 0 8px}
+legend{float:left;width:100%;font-weight:600;padding:0 0 8px}
 fieldset label{position:relative;display:inline-block;margin:4px 8px 0 0;padding:9px 18px;border:1.5px solid var(--bd);border-radius:99px;cursor:pointer;background:var(--bg);transition:background .12s}
 fieldset input{position:absolute;opacity:0;inset:0;margin:0;cursor:pointer}
 fieldset label:has(input:checked){background:linear-gradient(135deg,var(--h2),var(--h1));color:#fff;border-color:transparent}
@@ -77,13 +77,13 @@ small,footer{color:var(--mu)}footer{margin-top:24px;font-size:.85rem;text-align:
 <section id="qz" hidden><h2>Quiz: ¿fraude o legítimo?</h2><div id="qb"></div></section>
 
 <section id="ver" hidden><h2>Verificador de URL</h2>
-<div class="card"><label for="u">Pega el enlace que quieres revisar</label>
+<div class="card"><label for="u">Pega aquí el enlace que te llegó por WhatsApp o mensaje</label>
 <input type="text" id="u" placeholder="ejemplo: bancolombia-seguro.xyz/validar" autocomplete="off">
 <div class="ex" id="ex"></div><div class="row"><button class="p" id="go">Analizar enlace</button><button id="hd" hidden>Analizar cabeceras de seguridad</button></div>
 <p id="hn"><small>El análisis de cabeceras de seguridad requiere el servicio opcional y no está activo en esta versión.</small></p></div>
 <div id="vr" aria-live="polite"></div></section>
 
-<section id="sim" hidden><h2>Simulador: un día en tu tienda</h2><p>Responde como lo harías de verdad y mira las consecuencias.</p>
+<section id="sim" hidden><h2>Simulador: un día en tu tienda</h2><p>Responde como lo harías de verdad. <b>Caja</b> es el dinero de tu tienda y <b>Seguridad</b> mide qué tan protegida queda tu cuenta.</p>
 <div class="st"><span class="chip" id="sc"></span><span class="chip" id="ss"></span></div>
 <div class="wa-h"><span id="sw">Chat</span><small>en línea</small></div><div class="chat" id="ch" role="log" aria-live="polite"></div><div class="opts" id="op"></div></section>
 <section id="sos" hidden><h2>Ya caí, ¿qué hago?</h2><p>Respira. Actuar rápido ayuda. Elige qué te pasó:</p><div class="sos-o" id="so"></div><div id="sl"></div></section>
@@ -109,11 +109,12 @@ const CHECK=[
 ["El celular del negocio tiene bloqueo de pantalla.",1,"Pon PIN o huella para proteger el equipo si se pierde."],
 ["Hago copia de seguridad de contactos, pedidos y catálogo.",1,"Programa una copia periódica en la nube o en un disco."],
 ["Quienes me ayudan en el negocio saben reconocer mensajes sospechosos.",1,"Comparte este ejercicio con tu equipo de trabajo."]];
-$("#cl").innerHTML=CHECK.map((c,i)=>`<fieldset><legend>${i+1}. ${c[0]}</legend>${["Sí","A veces","No"].map((o,j)=>`<label><input type="radio" name="q${i}" value="${[1,.5,0][j]}"> ${o}</label>`).join("")}</fieldset>`).join("");
+$("#cl").innerHTML=CHECK.map((c,i)=>`<fieldset><legend>${i+1}. ${c[0]}</legend>${["Sí","A veces","No","No sé"].map((o,j)=>`<label><input type="radio" name="q${i}" value="${[1,.5,0,0][j]}"> ${o}</label>`).join("")}</fieldset>`).join("");
 $("#cl").onchange=e=>{let s=0,t=0,n=0;CHECK.forEach((c,i)=>{const r=document.querySelector(`input[name=q${i}]:checked`);if(r){n++;s+=c[1]*+r.value;t+=c[1]}});
  $("#pgi").style.width=n/CHECK.length*100+"%";$("#lv").textContent=`Respondidas ${n}/${CHECK.length} · puntaje parcial ${t?Math.round(s/t*100):0}/100`;
- const f=e.target.closest("fieldset"),i=$$("#cl fieldset").indexOf(f);f.style.outline="";const o=f.querySelector(".tip");if(o)o.remove();
+ const f=e.target.closest("fieldset");if(!f)return;const i=$$("#cl fieldset").indexOf(f);f.style.outline="";const o=f.querySelector(".tip");if(o)o.remove();
  if(+e.target.value<1)f.insertAdjacentHTML("beforeend",`<p class="tip pp">Consejo: ${CHECK[i][2]}</p>`)};
+addEventListener("pageshow",()=>setTimeout(()=>$("#cl").dispatchEvent(new Event("change")),300));
 $("#calc").onclick=()=>{let s=0,t=0,un=0,miss=[];
  CHECK.forEach((c,i)=>{const r=document.querySelector(`input[name=q${i}]:checked`);t+=c[1];if(!r){un++;return}s+=c[1]*+r.value;if(+r.value<1)miss.push(c)});
  if(un){const f=$$("#cl fieldset").filter((x,i)=>!document.querySelector(`input[name=q${i}]:checked`));f.forEach(x=>x.style.outline="3px solid var(--wa)");f[0].scrollIntoView({behavior:"smooth",block:"center"});$("#clr").innerHTML=`<p class="ba">Responde las ${un} preguntas que faltan.</p>`;return}
@@ -133,8 +134,8 @@ const CASES=[
 ["WhatsApp","Un cliente habitual pregunta por el catálogo, hace su pedido sin apuro y paga por transferencia que ves reflejada en tu app.",0,"Sin presión, con relación previa y pago confirmado en tu app. Todo en orden."]];
 let qi=0,qs=0,st=0;
 function qShow(){const c=CASES[qi];
- $("#qb").innerHTML=`<div class="card"><div class="pg"><i style="width:${(qi+1)/CASES.length*100}%"></i></div><small>Caso ${qi+1} de ${CASES.length} · ${c[0]}</small> <span class="chip">Aciertos ${qs}${st>1?" · racha "+st:""}</span><blockquote>${c[1]}</blockquote><div class="row"><button data-a="1">Es fraude</button><button data-a="0">Es legítimo</button></div><small>Atajos: F = fraude, L = legítimo</small><div id="fb"></div></div>`;
- $$("#qb [data-a]").forEach(b=>b.onclick=()=>{const ok=+b.dataset.a===c[2];if(ok){qs++;st++}else{st=0;$("#qb .card").classList.add("sk")}$$("#qb [data-a]").forEach(x=>x.disabled=true);
+ $("#qb").innerHTML=`<div class="card"><div class="pg"><i style="width:${(qi+1)/CASES.length*100}%"></i></div><small>Caso ${qi+1} de ${CASES.length} · ${c[0]}</small> <span class="chip" id="ac">Aciertos ${qs}${st>1?" · racha "+st:""}</span><blockquote>${c[1]}</blockquote><div class="row"><button data-a="1">Es fraude</button><button data-a="0">Es legítimo</button></div><small>Atajos: F = fraude, L = legítimo</small><div id="fb"></div></div>`;
+ $$("#qb [data-a]").forEach(b=>b.onclick=()=>{const ok=+b.dataset.a===c[2];if(ok){qs++;st++}else{st=0;$("#qb .card").classList.add("sk")}$("#ac").textContent="Aciertos "+qs+(st>1?" · racha "+st:"");$$("#qb [data-a]").forEach(x=>x.disabled=true);
   $("#fb").innerHTML=`<p class="${ok?"ok":"ba"} pp"><strong>${ok?"Correcto.":"Incorrecto."}</strong> ${c[2]?"Era un fraude.":"Era legítimo."} ${c[3]}</p><button class="p" id="nx">${qi<CASES.length-1?"Siguiente":"Ver resultado"}</button>`;
   $("#nx").onclick=()=>{qi++;qi<CASES.length?qShow():qEnd()}})}
 function qEnd(){D.Quiz=qs+"/"+CASES.length;pr();const m=qs>=6?"Excelente ojo.":qs>=4?"Vas bien: repasa los casos que fallaste.":"Conviene repetir el ejercicio con calma.";
